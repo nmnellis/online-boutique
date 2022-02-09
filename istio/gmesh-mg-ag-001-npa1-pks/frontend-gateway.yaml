@@ -1,0 +1,42 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: ingress-gateway-frontend
+  namespace: istio-system
+spec:
+  profile: empty
+  # This value is required for Gloo Mesh Istio
+  hub: gcr.io/istio-enterprise
+  # This value can be any Gloo Mesh Istio tag
+  tag: 1.11.5
+  components:
+    ingressGateways:
+      - name: istio-ingressgateway-frontend
+        namespace: istio-system
+        enabled: true
+        label:
+          istio: ingressgateway-frontend
+          app: istio-ingressgateway-frontend
+          # matches spec.values.global.network in istiod deployment
+          topology.istio.io/network: network1
+        k8s:
+          env:
+            - name: ISTIO_META_ROUTER_MODE
+              value: "sni-dnat"
+          service:
+            # match the LoadBalanced Service
+            ports:
+            - name: http2
+              port: 80
+              targetPort: 8080
+  values:
+    gateways:
+      istio-ingressgateway:
+        # Enable gateway injection
+        injectionTemplate: gateway
+    global:
+      # needed for connecting VirtualMachines to the mesh
+      network: network1
+      # needed for annotating istio metrics with cluster
+      multiCluster:
+        clusterName: gmesh-mg-ag-001-npa1-pks
