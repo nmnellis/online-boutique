@@ -6,7 +6,7 @@ metadata:
 spec:
   profile: empty
   # This value is required for Gloo Mesh Istio
-  hub: gcr.io/istio-enterprise
+  hub: us-docker.pkg.dev/gloo-mesh/istio-2daba5115807
   # This value can be any Gloo Mesh Istio tag
   tag: 1.11.5
   components:
